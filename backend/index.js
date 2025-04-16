@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
 
 // Import routes
 const clientRoutes = require('./routes/clients');
+const projectRoutes = require('./routes/projects');
 
 // Create simple placeholder routes for now
 const router = express.Router();
@@ -43,9 +44,21 @@ router.get('/', (req, res) => {
 
 // Use routes
 app.use('/api/clients', clientRoutes);
-app.use('/api/projects', router);
+app.use('/api/projects', projectRoutes);
 app.use('/api/expenses', router);
 app.use('/api/invoices', router);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: err.message });
+});
+
+// 404 handler for undefined routes
+app.use((req, res) => {
+  console.log(`404 Not Found: ${req.method} ${req.url}`);
+  res.status(404).json({ message: 'Route not found' });
+});
 
 // Define port
 const PORT = process.env.PORT || 3000;
